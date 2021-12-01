@@ -1,0 +1,7 @@
+#+title: Advent of Code 2021
+#+author: @hiepph
+
+* Overview
+  It's that time of the year again! Head for [[https://adventofcode.com/2021][Advent of Code 2021]].
+
+  This year's theme is also Clojure.
