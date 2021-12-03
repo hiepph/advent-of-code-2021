@@ -26,16 +26,15 @@
    (apply min-key val (frequencies coll))))
 
 (def gamma-rate
-  (Integer/parseInt
-   (str/join (map most-common-bit cols))
-   2))
+  (map most-common-bit cols))
 
 (def epsilon-rate
-  (Integer/parseInt
-   (str/join (map least-common-bit cols))
-   2))
+  (map least-common-bit cols))
 
-(println (* gamma-rate epsilon-rate))
+(def sol1
+  (map #(Integer/parseInt (str/join %) 2)
+       [gamma-rate epsilon-rate]))
+(println (apply * sol1))
 
 ;;
 ;; 2
@@ -63,31 +62,29 @@
        (key (apply min-key val freq)))))
 
 (def oxygen-rate
-  (->
-   (reduce
-    (fn [res i]
-      (let [mcb (most-common-bit-2 (get-col res i))]
-        (filter
-         #(= (nth % i) mcb)
-         res)))
-    input
-    (range (count (nth input 0))))
-   first
-   str/join
-   (Integer/parseInt 2)))
+  (reduce
+   (fn [res i]
+     (let [mcb (most-common-bit-2 (get-col res i))]
+       (filter
+        #(= (nth % i) mcb)
+        res)))
+   input
+   (range (count (nth input 0)))))
 
 (def co2-rate
-  (->
-   (reduce
-    (fn [res i]
-      (let [lcb (least-common-bit-2 (get-col res i))]
-        (filter
-         #(= (nth % i) lcb)
-         res)))
-    input
-    (range (count (nth input 0))))
-   first
-   str/join
-   (Integer/parseInt 2)))
+  (reduce
+   (fn [res i]
+     (let [lcb (least-common-bit-2 (get-col res i))]
+       (filter
+        #(= (nth % i) lcb)
+        res)))
+   input
+   (range (count (nth input 0)))))
 
-(println (* oxygen-rate co2-rate))
+(def sol2
+  (map #(-> %
+            first
+            str/join
+            (Integer/parseInt 2))
+       [oxygen-rate co2-rate]))
+(println (apply * sol2))
