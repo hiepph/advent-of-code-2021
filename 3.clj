@@ -62,28 +62,29 @@
        (key (apply min-key val freq)))))
 
 (def oxygen-rate
-  (reduce
-   (fn [res i]
-     (let [mcb (most-common-bit-2 (get-col res i))]
-       (filter
-        #(= (nth % i) mcb)
-        res)))
-   input
-   (range (count (nth input 0)))))
+  (first
+   (reduce
+    (fn [res i]
+      (let [mcb (most-common-bit-2 (get-col res i))]
+        (filter
+         #(= (nth % i) mcb)
+         res)))
+    input
+    (range (count (nth input 0))))))
 
 (def co2-rate
-  (reduce
-   (fn [res i]
-     (let [lcb (least-common-bit-2 (get-col res i))]
-       (filter
-        #(= (nth % i) lcb)
-        res)))
-   input
-   (range (count (nth input 0)))))
+  (first
+   (reduce
+    (fn [res i]
+      (let [lcb (least-common-bit-2 (get-col res i))]
+        (filter
+         #(= (nth % i) lcb)
+         res)))
+    input
+    (range (count (nth input 0))))))
 
 (def sol2
   (map #(-> %
-            first
             str/join
             (Integer/parseInt 2))
        [oxygen-rate co2-rate]))
