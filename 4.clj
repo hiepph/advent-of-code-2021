@@ -39,10 +39,6 @@
    (some true? (map #(every? true? %) board))
    (some true? (map #(every? true? %) (transpose board)))))
 
-(defn indexed
-  [coll]
-  (map-indexed vector coll))
-
 (defn mark-row
   "Mark a row with all the numbers equal the guess to true."
   [row guess]
