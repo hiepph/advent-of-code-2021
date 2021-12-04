@@ -57,6 +57,13 @@
    #(mark-row % guess)
    board))
 
+(defn sum-board
+  [board]
+  "Sum all the numbers, ignore the 'true' marks"
+  (apply +
+         (filter (complement true?)
+                 (flatten board))))
+
 (def bingo
   (loop [boards boards
          guesses guesses]
@@ -71,8 +78,29 @@
 
 (def sol1
   (* win-guess
-     (apply +
-            (filter (complement true?)
-                    (flatten win-board)))))
+     (sum-board win-board)))
 
 (println sol1)
+
+
+;;
+;; 2
+;; Only care about the last win board
+;;
+(def bingo-2
+  (loop [boards boards
+         guesses guesses]
+    (let [guess (first guesses)
+          boards (map #(mark-board % guess) boards)
+          not-win-boards (filter (complement win?) boards)]
+      (if (empty? not-win-boards)
+        [(first boards) guess]
+        (recur not-win-boards (rest guesses))))))
+(def guess-2 (second bingo-2))
+(def last-win-board (first bingo-2))
+
+(def sol2
+  (* guess-2
+     (sum-board last-win-board)))
+
+(println sol2)
