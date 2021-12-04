@@ -3,5 +3,67 @@
 
 * Overview
   It's that time of the year again! Head for [[https://adventofcode.com/2021][Advent of Code 2021]].
-
   This year's theme is also Clojure.
+
+* Write-up
+** Day 4
+   It's important to break down a task into sub-problems and solve each with a function.
+   There is a reason it's called functional programming.
+
+   First is the function to check if a board's condition is enough to win.
+   Additional tranpose functionality is added to deal with the 2d matrix.
+   #+begin_src clojure
+(defn transpose [m]
+  (apply mapv vector m))
+
+(defn win?
+  [board]
+  (or
+   (some true? (map #(every? true? %) board))
+   (some true? (map #(every? true? %) (transpose board)))))
+   #+end_src
+
+   My first thought when approaching the problem was:
+   #+begin_src clojure
+(for [guess guesses]
+  (for [board boards]
+    (for [row board]
+      (for [num row]
+        ;; ...
+        ))))
+   #+end_src
+   As you see I was trying to code into a triangular shape.
+   Inside nested loop I was trying to check winning condition and complicated modification logic.
+   To break the loop when the winning condition is met is also a big problem.
+   I even thought of modifying the variable ~boards~ by ~assoc-in~. That's not an idiom of functional programming.
+   This is a sign to break down the problems. I have to make the code as *flat* as possible.
+
+   So I divided into sub-problems to deal with individual board, and then individual row:
+   #+begin_src clojure
+(defn mark-row
+  "Mark a row with all the numbers equal the guess to true."
+  [row guess]
+  (map
+   #(if (= % guess) true %)
+   row))
+
+(defn mark-board
+  "Mark a board with all the numbers equal the guess to true."
+  [board guess]
+  (map
+   #(mark-row % guess)
+   board))
+   #+end_src
+
+   To solve early break problem I use loop:
+   #+begin_src clojure
+(loop [boards boards
+         guesses guesses]
+    (let [guess (first guesses)
+          boards (map #(mark-board % guess) boards)
+          win-board (some #(if (win? %) %) boards)]
+      (if win-board
+        ;; break here
+        [win-board guess]
+        (recur boards (rest guesses)))))
+   #+end_src
