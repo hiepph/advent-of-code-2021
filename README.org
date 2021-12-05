@@ -92,12 +92,12 @@
    #+begin_src clojure
 (defn mark-diagram-with-coords
   "Mark diagram from a list of coords [x y]"
-  [diagram coord]
+  [diagram coords]
   (reduce
    (fn [res [x y]]
      (update-in res [y x] inc))
    diagram
-   coord))
+   coords))
    #+end_src
 
    So I can concentrate on the logic of making the slice of coordinates:

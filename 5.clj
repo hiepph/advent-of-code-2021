@@ -46,12 +46,12 @@
 
 (defn mark-diagram-with-coords
   "Mark diagram from a list of coords [x y]"
-  [diagram coord]
+  [diagram coords]
   (reduce
    (fn [res [x y]]
      (update-in res [y x] inc))
    diagram
-   coord))
+   coords))
 
 (defn mark-diagram
   "Mark diagram derived from a couple of coord [x1 y1 x2 y2]"
