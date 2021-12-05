@@ -67,3 +67,79 @@
         [win-board guess]
         (recur boards (rest guesses)))))
    #+end_src
+
+** Day 5
+   Generate a 2d diagram:
+   #+begin_src clojure
+(def diagram
+  (into [] (repeat n
+                   (into [] (repeat n 0)))))
+   #+end_src
+   It's necessary to use ~(into [] ...)~ since I can only modify elements in a vector using ~update-in~.
+
+   Since x1 can be larger than x2 (so does y1 and y2) so I wrote a helper to generate a range which does not care about the direction:
+   #+begin_src clojure
+(defn gen-range
+  "Helper to generate a range, either from smaller number to larger number
+  or from larger number to smaller number."
+  [a b]
+  (if (< a b)
+    (range a (inc b))
+    (range a (dec b) -1)))
+   #+end_src
+
+   Again, I broke down the problem into a sub-problem of marking a diagram with a list of coordinates ~[x y]~:
+   #+begin_src clojure
+(defn mark-diagram-with-coords
+  "Mark diagram from a list of coords [x y]"
+  [diagram coord]
+  (reduce
+   (fn [res [x y]]
+     (update-in res [y x] inc))
+   diagram
+   coord))
+   #+end_src
+
+   So I can concentrate on the logic of making the slice of coordinates:
+   #+begin_src clojure
+(defn mark-diagram
+  "Mark diagram derived from a couple of coord [x1 y1 x2 y2]"
+  [diagram couple-coord]
+  (let [[x1 y1 x2 y2] couple-coord]
+    (if (= y1 y2)
+      ;; horizontally
+      (mark-diagram-with-coords
+       diagram
+       (map #(vector % y1) (gen-range x1 x2)))
+
+      ;; vertically
+      (mark-diagram-with-coords
+       diagram
+       (map #(vector x1 %) (gen-range y1 y2))))))
+   #+end_src
+
+   Part 2 is just a piece of cake by building up from the solution of part 1:
+   #+begin_src clojure
+(defn mark-diagram-2
+  [diagram couple-coord]
+  (let [[x1 y1 x2 y2] couple-coord]
+    (if (or (= x1 x2)
+            (= y1 y2))
+      (mark-diagram diagram couple-coord)
+      ;; diagonally
+      (mark-diagram-with-coords
+       diagram
+       (zipmap (gen-range x1 x2) (gen-range y1 y2))))))
+   #+end_src
+
+   In part 1, by using loop I can filter from the start:
+   #+begin_src clojure
+(loop [diagram diagram
+         couple-coords (filter (fn [couple-coord]
+                          (let [[x1 y1 x2 y2] couple-coord]
+                            (or (= x1 x2)
+                                (= y1 y2))))
+                        couple-coords)]
+    # ...
+)
+   #+end_src
