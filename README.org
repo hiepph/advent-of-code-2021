@@ -214,7 +214,7 @@
 (apply + (timers-after-n-days timers 80))
    #+end_src
 
-   Problem 2 is now too easy, with no additional space:
+   Problem 2 is now so easy, with no additional space:
    #+begin_src clojure
 (apply + (timers-after-n-days timers 256))
    #+end_src
