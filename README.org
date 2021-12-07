@@ -143,3 +143,81 @@
     ;; ...
 )
    #+end_src
+
+** Day 6
+   My initial brute force solution is to store all the fishes, and then count!
+   #+begin_src clojure
+(def fishes
+  (reverse (map
+            #(Integer/parseInt %)
+            (str/split input #"[,|\n]"))))
+
+(defn tick-one-day
+  "What will happen to the fish after one day?"
+  [fishes]
+  (let [dec-fishes (map dec fishes)
+        n-new-fishes (count (filter #(= -1 %) dec-fishes))
+        new-fishes (reduce
+                    #(cons %2 %1)
+                    dec-fishes
+                    (repeat n-new-fishes 8))]
+    (map #(if (= -1 %) 6 %)
+         new-fishes)))
+   #+end_src
+
+   I learned a tip for repeatedly apply the function to the fishes each day (using ~iterate~):
+   #+begin_src clojure
+(defn fishes-after-n-day
+  [fishes n]
+  (first
+   (drop n
+         (take (inc n) (iterate tick-one-day fishes)))))
+
+(count (fishes-after-n-day fishes 80))
+   #+end_src
+
+   80 days are fine, but the memory grew very quickly for 256 days in the problem 2.
+   And it would take ages (e.g. 26984457539 fishes in the result) to count.
+
+   So I have to change the strategy. Instead of storing the fishes, I store the frequencies of the timers from 0 to 8.
+   #+begin_src clojure
+(def timers
+  (reduce
+   (fn [res i]
+     (update res i inc))
+   (into [] (repeat 9 0))
+   fishes))
+;; => 0 1 1 2 1 0 0 0 0
+   #+end_src
+
+   After each day, we can visualize we shift the timers vector to the left position (i.e. each timers decrease by 1 value).
+   Note that 0 turns to 6, and we add new number 8 by the number of 0.
+   #+begin_src clojure
+(defn shift-left
+  "Shift the timers to the 'left', corresponding to one day,
+  Increase in the new timers: #6 and #8 by the original #0.
+  e.g. 1 1 2 1 0 0 0 0 0 => 1 2 1 0 0 0 1 0 1"
+  [orig]
+  (let [n-0 (first orig)
+        new (conj (into [] (rest orig)) n-0)]
+    (update new 6 + n-0)))
+   #+end_src
+
+   We simply sum all the numbers in the internal timers to get the number of fishes:
+   #+begin_src clojure
+(defn timers-after-n-days
+  [timers n]
+  (first
+   (drop n (take (inc n)
+                 (iterate shift-left timers)))))
+
+(apply + (timers-after-n-days timers 80))
+   #+end_src
+
+   Problem 2 is now too easy, with no additional space:
+   #+begin_src clojure
+(apply + (timers-after-n-days timers 256))
+   #+end_src
+
+   Space: O(1)
+   Time: O(n)
