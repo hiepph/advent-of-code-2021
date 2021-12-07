@@ -4,12 +4,13 @@
   (slurp "input/6.txt"))
 
 (def fishes
-  (reverse (map
-            #(Integer/parseInt %)
-            (str/split input #"[,|\n]"))))
+  (map
+   #(Integer/parseInt %)
+   (str/split input #"[,|\n]")))
 
 ;;
 ;; 1
+;;
 ;; 80 days
 ;;
 (def timers
@@ -38,6 +39,7 @@
 
 ;;
 ;; 2
+;;
 ;; 256 days
 ;;
 (apply + (timers-after-n-days timers 256))
