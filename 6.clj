@@ -1,43 +1,43 @@
 (require '[clojure.string :as str])
 
 (def input
-  (slurp "test/6.txt"))
-
-;;
-;; 1
-;; Simply traverse the fishes, decrease each timer.
-;; Add 8 when the timer get to 0, then reset it to 6 in next step.
-;;
+  (slurp "input/6.txt"))
 
 (def fishes
   (reverse (map
             #(Integer/parseInt %)
             (str/split input #"[,|\n]"))))
 
-(defn tick-one-day
-  "What will happen to the fish after one day?"
-  [fishes]
-  (let [dec-fishes (map dec fishes)
-        n-new-fishes (count (filter #(= -1 %) dec-fishes))
-        new-fishes (reduce
-                    #(cons %2 %1)
-                    dec-fishes
-                    (repeat n-new-fishes 8))]
-    (map #(if (= -1 %) 6 %)
-         new-fishes)))
+;;
+;; 1
+;; 80 days
+;;
+(def timers
+  (reduce
+   (fn [res i]
+     (update res i inc))
+   (into [] (repeat 9 0))
+   fishes))
 
-(defn fishes-after-n-day
-  [fishes n]
+(defn shift-left
+  "Shift the timers to the 'left', corresponding to one day,
+  Increase in the new timers: #6 and #8 by the original #0.
+  e.g. 1 1 2 1 0 0 0 0 0 => 1 2 1 0 0 0 1 0 1"
+  [orig]
+  (let [n-0 (first orig)
+        new (conj (into [] (rest orig)) n-0)]
+    (update new 6 + n-0)))
+
+(defn timers-after-n-days
+  [timers n]
   (first
-   (drop n
-         (take (inc n) (iterate tick-one-day fishes)))))
+   (drop n (take (inc n)
+                 (iterate shift-left timers)))))
 
-(count (fishes-after-n-day fishes 80))
-
+(apply + (timers-after-n-days timers 80))
 
 ;;
 ;; 2
-;; Don't store the fishes!
-;; Switch to count the frequencies of the internal timers instead
+;; 256 days
 ;;
-;; (count (fishes-after-n-day fishes 256))
+(apply + (timers-after-n-days timers 256))
