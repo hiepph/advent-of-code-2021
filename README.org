@@ -165,7 +165,7 @@
          new-fishes)))
    #+end_src
 
-   I learned a tip for repeatedly apply the function to the fishes each day (using ~iterate~):
+   I learned a tip for repeatedly applying one function to the fishes each day (using ~iterate~):
    #+begin_src clojure
 (defn fishes-after-n-day
   [fishes n]
@@ -190,8 +190,8 @@
 ;; => 0 1 1 2 1 0 0 0 0
    #+end_src
 
-   After each day, we can visualize we shift the timers vector to the left position (i.e. each timers decrease by 1 value).
-   Note that 0 turns to 6, and we add new number 8 by the number of 0.
+   After each day, we shift the timers vector to the left position (i.e. each timer's value decreases by 1).
+   Note that 0 turns to 6, and the new number of 8 are added equal the number of 0.
    #+begin_src clojure
 (defn shift-left
   "Shift the timers to the 'left', corresponding to one day,
