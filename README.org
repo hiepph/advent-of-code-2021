@@ -222,3 +222,7 @@
    Space: O(1)
 
    Time: O(n)
+
+** Day 7
+   No special trick needed, I brute force to calculate the fuels needed for each position.
+   Time: O(n^2).
