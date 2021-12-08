@@ -226,3 +226,14 @@
 ** Day 7
    No special trick needed, I brute force to calculate the fuels needed for each position.
    Time: O(n^2).
+
+
+** Day 8
+   Part 1 is easy since you only care about the length of each output values that would match 2, 3, 4, 7 (which would render 1, 7, 4, 8).
+   #+begin_src clojure
+(count
+ (filter (fn [num]
+           (some #{num} #{2 3 4 7}))
+         ;; ...
+))
+   #+end_src
