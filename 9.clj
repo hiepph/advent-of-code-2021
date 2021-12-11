@@ -1,7 +1,7 @@
 (require '[clojure.string :as str])
 
 (def input
-  (str/split (slurp "test/9.txt") #"\n"))
+  (str/split (slurp "input/9.txt") #"\n"))
 
 ;;
 ;; 1
@@ -61,24 +61,34 @@
 ;;
 ;; 2
 ;;
-(defn expand
-  "Expand the basin from a [y x] coord.
-  Returns the count of the expanded basin."
-  ([coord] (expand coord {}))
-  ([coord visited]
-   (let [adjacent-pos (adjacent-coords coord)
-         adjacent-vals (map cell-value adjacent-pos)
+(defn dfs
+  "Expand the basin from a [y x] coord."
+  [coord]
+  (loop [stack (list coord)
+         visited {}]
+    (if (empty? stack)
+      visited
+      (let [cur-coord (peek stack)
+            cur-value (cell-value cur-coord)
+            new-stack (pop stack)]
+        (if (contains? visited cur-coord)
+          (recur new-stack visited)
+          (let [adjacent-pos (adjacent-coords cur-coord)
+                adjacent-vals (map cell-value adjacent-pos)
+                adjacent-pos-vals (map vector adjacent-pos adjacent-vals)
+                adjacent-basin-coords (map first
+                                           (filter
+                                            #(and (= (- (second %) cur-value) 1)
+                                                  (not (contains? visited (first %)))
+                                                  (< (second %) 9))
+                                            adjacent-pos-vals))]
+            (recur (apply conj new-stack adjacent-basin-coords)
+                   (assoc visited cur-coord true))))))))
 
-         cur-value (cell-value coord)
+(def basins
+  (map #(count (keys (dfs %)))
+       low-points))
 
-         adjacent-pos-vals (map vector adjacent-pos adjacent-vals)
-         adjacent-basin-coords (map first (filter
-                                           #(and (= (- (second %) cur-value) 1)
-                                                 (not (get visited %)))
-                                           adjacent-pos-vals))]
-     (if (= (count adjacent-basin-coords) 0)
-       1
-       (apply + 1 (map #(expand % (assoc
-                                   (assoc visited coord true)
-                                   % true))
-                       adjacent-basin-coords))))))
+(apply * (take-last 3 (sort basins)))
+;; wrong: 414120
+;; right: 964712
