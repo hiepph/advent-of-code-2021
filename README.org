@@ -286,7 +286,7 @@ b    .  b    .  .    c  b    c  b    c
 ** Day 9
    Finding low points in part 1 is straightforward.
    Breaking down to subproblems, again, is a huge help for part 2.
-    + Function to support find all ajdacent coorindates:
+    + Function to support find all adjacent coorindates:
     #+begin_src clojure
 (defn adjacent-coords
   "Given a (y, x) coordinate, return list of current coordinate and
