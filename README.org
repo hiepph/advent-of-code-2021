@@ -282,3 +282,34 @@ b    .  b    .  .    c  b    c  b    c
    #+begin_src clojure
 (map vector patterns outputs)
    #+end_src
+
+** Day 9
+   Finding low points in part 1 is straightforward.
+   Breaking down to subproblems, again, is a huge help for part 2.
+    + Function to support find all ajdacent coorindates:
+    #+begin_src clojure
+(defn adjacent-coords
+  "Given a (y, x) coordinate, return list of current coordinate and
+    4 adjacent coordinates: u, d, l, r"
+  [coord]
+  (let [[y x] coord]
+    (filter
+     #(not (= coord %))
+     [[(max 0 (dec y)) x]
+      [(min (dec limy) (inc y)) x]
+      [y (max 0 (dec x))]
+      [y (min (dec limx) (inc x))]])))
+    #+end_src
+    + Function to get the value given the coordinate:
+    #+begin_src clojure
+(defn cell-value
+  "Return the cell value from [y x] coord"
+  [coord]
+  (let [[y x] coord]
+    (nth (nth locations y) x)))
+    #+end_src
+
+   In problem 2, from the low points found in part 1, we can expand them outward and then count all the coordinates to get the size of basins.
+   This is a typical DFS problem.
+
+   /Note/: There are some bugs inside the DFS function that I cannot find out right now, so the solution for part 2 is currently TBD.

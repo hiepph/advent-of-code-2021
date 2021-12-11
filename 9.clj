@@ -90,5 +90,4 @@
        low-points))
 
 (apply * (take-last 3 (sort basins)))
-;; wrong: 414120
-;; right: 964712
+;;=> 414120 (wrong) # 964712 (right)
