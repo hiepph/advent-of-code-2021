@@ -65,29 +65,24 @@
   "Expand the basin from a [y x] coord."
   [coord]
   (loop [stack (list coord)
-         visited {}]
+         visited #{}]
     (if (empty? stack)
       visited
       (let [cur-coord (peek stack)
-            cur-value (cell-value cur-coord)
             new-stack (pop stack)]
         (if (contains? visited cur-coord)
           (recur new-stack visited)
-          (let [adjacent-pos (adjacent-coords cur-coord)
-                adjacent-vals (map cell-value adjacent-pos)
-                adjacent-pos-vals (map vector adjacent-pos adjacent-vals)
-                adjacent-basin-coords (map first
-                                           (filter
-                                            #(and (= (- (second %) cur-value) 1)
-                                                  (not (contains? visited (first %)))
-                                                  (< (second %) 9))
-                                            adjacent-pos-vals))]
-            (recur (apply conj new-stack adjacent-basin-coords)
-                   (assoc visited cur-coord true))))))))
+          (let [new-visited (conj visited cur-coord)
+                cur-value (cell-value cur-coord)
+                adjacent-pos (filter
+                              #(and (< (cell-value %) 9)
+                                    (not (contains? visited %)))
+                              (adjacent-coords cur-coord))]
+            (recur (apply conj new-stack adjacent-pos)
+                   new-visited)))))))
 
 (def basins
-  (map #(count (keys (dfs %)))
+  (map #(count (dfs %))
        low-points))
 
 (apply * (take-last 3 (sort basins)))
-;;=> 414120 (wrong) # 964712 (right)

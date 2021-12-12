@@ -311,5 +311,29 @@ b    .  b    .  .    c  b    c  b    c
 
    In problem 2, from the low points found in part 1, we can expand them outward and then count all the coordinates to get the size of basins.
    This is a typical DFS problem.
+   #+begin_src clojure
+(defn dfs
+  "Expand the basin from a [y x] coord."
+  [coord]
+  (loop [stack (list coord)
+         visited #{}]
+    (if (empty? stack)
+      visited
+      (let [cur-coord (peek stack)
+            new-stack (pop stack)]
+        (if (contains? visited cur-coord)
+          (recur new-stack visited)
+          (let [new-visited (conj visited cur-coord)
+                cur-value (cell-value cur-coord)
+                adjacent-pos (filter
+                              #(and (< (cell-value %) 9)
+                                    (not (contains? visited %)))
+                              (adjacent-coords cur-coord))]
+            (recur (apply conj new-stack adjacent-pos)
+                   new-visited)))))))
+   #+end_src
 
-   /Note/: There are some bugs inside the DFS function that I cannot find out right now, so the solution for part 2 is currently TBD.
+   At first, I misunderstood the problem's constraints:
+   + Value including in one basin must < 9
+   + Value doesn't have to be difference by 1
+   And I have to refer to one [[https://github.com/plan-x64/advent-of-code-2021/blob/main/advent/day9.py][solution]] on Reddit to find out my mistakes.
